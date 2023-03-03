@@ -8,7 +8,7 @@ import pandas as pd
 
 # Load data for a given symbol
 def get_stock_data(symbol):
-      file_path = '/Users/gawain/Desktop/3.UBC/Block5/Data551-Dataviz_II/Python+Dash快速web应用开发/SP500_merged.csv'
+      file_path = 'data/SP500_merged.csv'
       df = pd.read_csv(file_path)
       df = df[df['Symbol'] == symbol]
       df = df[['Date', 'Close']]
@@ -16,7 +16,7 @@ def get_stock_data(symbol):
 
 # Load SP500 data
 def get_Sp500_data():
-      sp500_file_path = '/Users/gawain/Desktop/3.UBC/Block5/Data551-Dataviz_II/Python+Dash快速web应用开发/SP500_2010_2023.csv'
+      sp500_file_path = 'data/SP500_original.csv'
       sp500_df = pd.read_csv(sp500_file_path, )
       sp500_df.rename(columns={'date': 'Date'}, inplace=True)
       sp500_df = sp500_df[['Date', 'Close']]
