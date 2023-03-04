@@ -112,8 +112,14 @@ def update_company_options(selected_sector):
 )
 def update_trend_line(selected_sector, selected_companies):
     df_top_5_selected_sector = df_top_5[df_top_5['GICS Sector'] == selected_sector]
-    df_top_5_selected_sector_company = df_top_5_selected_sector[
-        df_top_5_selected_sector['Symbol'] == selected_companies]
+
+    if not selected_companies:
+        # If no companies are selected, return an empty dataframe
+        df_top_5_selected_sector_company = pd.DataFrame(columns=df_top_5.columns)
+    else:
+        # Filter the dataframe based on the selected companies
+        df_top_5_selected_sector_company = df_top_5_selected_sector[
+            df_top_5_selected_sector['Symbol'].isin(selected_companies)]
 
     chart = alt.Chart(df_top_5_selected_sector_company).mark_line().encode(
         x='Date:T',
