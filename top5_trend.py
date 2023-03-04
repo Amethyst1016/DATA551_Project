@@ -1,71 +1,71 @@
 import dash
 from dash import html
 from dash import dcc
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 import altair as alt
 import dash_bootstrap_components as dbc
 import pandas as pd
-import plotly
-import plotly.express as px
+
 
 # Read in global data
 df = pd.read_csv('data/SP500_merged.csv')
+df = df[df['Symbol'] != 'GEHC']
+# GEHC only have 44 values, if we want to know the data for past 1 year, for each Symbol at least have 360 values
 
 sector_name = df['GICS Sector'].unique().tolist()
-
-sector_symbol = []
-for i in sector_name:
-    sector_symbol.append(df[df['GICS Sector'] == i]['Symbol'].unique().tolist())
+sector_symbol = df['Symbol'].unique().tolist()
 
 
-def growth_rate_company(duration):
-    company_growth_rate = []
+# Define a function to calculate the growth rate of each company (sector_symbol) in each sector (sector_name)
+def growth_rate_company(duration, df):
+    # duration: number of days to calculate the growth rate
+    # df: the dataframe to be used
+    df['Date'] = pd.to_datetime(df['Date'], utc=True)
+    end_date = df['Date'].max()
+    start_date = end_date - pd.DateOffset(days = duration)
+    dff = df[df['Date'].between(start_date, end_date)]
 
-    for i in range(len(sector_name)):
-        grow_rate = []
-
-        for n in sector_symbol[i]:
-            dff = df[df['GICS Sector'] == sector_name[i]][df['Symbol'] == n]
-            grow_rate.append(dff.iloc[len(dff) - 1, 1] / dff.iloc[len(dff) - 1 - duration, 1] - 1)
-
-        company_growth_rate.extend([{'sector': sector_name[i],
-                                     'company': n, 'growth_rate': g
-                                     } for n, g in zip(sector_symbol[i], grow_rate)])
-
-    company_growth_rate = pd.DataFrame(company_growth_rate)
+    # Calculate the growth rate of each company in each sector
+    company_growth_rate = dff.groupby(['GICS Sector', 'Symbol']).apply(lambda x: (x['Close'].iloc[-1] - x['Close'].iloc[0])/x['Close'].iloc[0]).reset_index(name='Growth Rate')
 
     return company_growth_rate
 
 
-company_growth_rate = growth_rate_company(90)
+# Define a function to subset the original df to only include the top 5 companies in each sector
+def top_5_company(duration, df):
 
-top_5 = company_growth_rate.groupby('sector').apply(lambda x: x.nlargest(5, 'growth_rate'))
-top_5 = top_5.reset_index(drop=True)
+    company_growth_rate = growth_rate_company(duration, df)
 
-top_5_symbol = []
-for i in sector_name:
-    top_5_symbol.append(top_5[top_5['sector'] == i]['company'].unique().tolist())
+    # Filter the top 5 companies in each sector
+    top_5 = company_growth_rate.groupby('GICS Sector').apply(lambda x: x.nlargest(5, 'Growth Rate'))
+    top_5 = top_5.reset_index(drop=True)
 
-df_top_5 = df[df['Symbol'].isin(top_5_symbol[0] + top_5_symbol[1] + top_5_symbol[2] + top_5_symbol[3] +
-                                top_5_symbol[4] + top_5_symbol[5] + top_5_symbol[6] + top_5_symbol[7] +
-                                top_5_symbol[8] + top_5_symbol[9] + top_5_symbol[10])]
+    # Obtain the symbol of top 5 companies in each sector
+    top_5_symbol = top_5['Symbol'].unique().tolist()
 
-# remove Healthcare sector
-df_top_5 = df_top_5[df_top_5['GICS Sector'] != 'Health Care']
+    # Subset the df to only include the top 5 companies in each sector
+    df_top_5 = df[df['Symbol'].isin(top_5_symbol)]
 
+    return df_top_5
+
+
+# df: set duration = 90 days for now, can be changed later depending on the user input
+df_top_5 = top_5_company(90, df)
 
 # Define the sectors and their symbols
-sector_name = df_top_5['GICS Sector'].unique().tolist()
-symbols_by_sector = {sector: df_top_5[df_top_5['GICS Sector'] == sector]['Symbol'].unique() for sector in sector_name}
+sectors = df_top_5['GICS Sector'].unique().tolist()
+symbols_by_sector = {sector: df_top_5[df_top_5['GICS Sector'] ==
+                                            sector]['Symbol'].unique() for sector in sector_name}
 
-#####
 
+###################################################
+############       Dash App        ################
+###################################################
 
 # create dash app
 app = dash.Dash(__name__)
 
 # Define the dropdown for sector selection
-sectors = df_top_5['GICS Sector'].unique().tolist()
 dropdown_sector = dcc.Dropdown(
     id='dropdown_sector',
     options=[{'label': sector, 'value': sector} for sector in sectors],
@@ -81,12 +81,15 @@ checkbox_company = dcc.Checklist(
 
 # Define the graph for the trend line plot
 # graph_trend_line = dcc.Graph(id='graph_trend_line')
+# dcc.Graph would not work with altair, so we use html.Iframe instead
 
 # Define the layout of the app
 app.layout = html.Div([
     html.Iframe(
         id='scatter',
-        style={'border-width': '0', 'width': '100%', 'height': '400px'}),
+        style={'border-width': '0',
+               'width': '100%',
+               'height': '400px'}),
     dropdown_sector,
     checkbox_company
 ])
