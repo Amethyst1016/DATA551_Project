@@ -25,15 +25,22 @@ app = dash.Dash(__name__)
 
 app.layout = html.Div(
       [
-            dcc.Dropdown(
-                  id='symbol-dropdown',
-                  options=[{'label': symbol, 'value': symbol} for symbol in symbols],
-                  value='S&P_original'
-            ),
-            dcc.Dropdown(
-                  id='compare-dropdown',
-                  options=[{'label': symbol, 'value': symbol} for symbol in symbols],
-                  value='FTSE_100'
+            html.Div(
+                  [
+                        dcc.Dropdown(
+                              id='symbol-dropdown',
+                              options=[{'label': symbol, 'value': symbol} for symbol in symbols],
+                              value='S&P_original',
+                              style={'width': '80%'}
+                        ),
+                        dcc.Dropdown(
+                              id='compare-dropdown',
+                              options=[{'label': symbol, 'value': symbol} for symbol in symbols],
+                              value='FTSE_100',
+                              style={'width': '80%'}
+                        ),
+                  ],
+                  style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
             ),
             dcc.RadioItems(
                   id='moving-average-radio',
@@ -49,7 +56,10 @@ app.layout = html.Div(
       ]
 )
 
-@app.callback(Output('line-chart', 'figure'), [Input('symbol-dropdown', 'value'), Input('compare-dropdown', 'value'), Input('moving-average-radio', 'value')])
+@app.callback(Output('line-chart', 'figure'), 
+                  [Input('symbol-dropdown', 'value'), 
+                        Input('compare-dropdown', 'value'), 
+                        Input('moving-average-radio', 'value')])
 def update_line_chart(symbol, compare_symbol, moving_average_window):
       fig = make_subplots(specs=[[{"secondary_y": True}]])
       
@@ -62,19 +72,28 @@ def update_line_chart(symbol, compare_symbol, moving_average_window):
       if moving_average_window != 0:
             # Add trace for selected index moving average
             ma = moving_average(df, symbol, moving_average_window)
-            fig.add_trace(go.Scatter(x=df.index, y=ma, name='{}-Day Moving Average ({})'.format(moving_average_window, symbol)), secondary_y=False)
+            fig.add_trace(go.Scatter(x=df.index, y=ma, name='{}-Day MA ({})'.format(moving_average_window, symbol)), 
+                              secondary_y=False)
 
             # Add trace for comparison index moving average
             ma_compare = moving_average(df, compare_symbol, moving_average_window)
-            fig.add_trace(go.Scatter(x=df.index, y=ma_compare, name='{}-Day Moving Average ({})'.format(moving_average_window, compare_symbol)), secondary_y=True)
+            fig.add_trace(go.Scatter(x=df.index, y=ma_compare, name='{}-Day MA ({})'.format(moving_average_window, compare_symbol)), 
+                              secondary_y=True)
 
       fig.update_layout(
-            height=600,
-            width=1000,
+            height=400,
+            width=1250,
             xaxis=dict(title='Date'),
-            yaxis=dict(title=symbol),
-            yaxis2=dict(title=compare_symbol, overlaying='y', side='right'),
+            yaxis=dict(title=symbol, 
+                        showgrid=False),
+            yaxis2=dict(title=compare_symbol, 
+                              overlaying='y', 
+                              side='right'),
             hovermode='x',
+            title='{} vs {} Price'.format(symbol, compare_symbol),
+            # title='Global Index Comparison'
+            
+            
       )
 
       return fig
