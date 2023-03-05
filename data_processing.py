@@ -106,3 +106,5 @@ global_df = pd.read_csv('data/Global_index.csv')
 # select the last 100 rows
 select_time_range(global_df, 100)
 
+
+#%%
