@@ -12,7 +12,7 @@ So far, all four main plots have been completed using daily data. Minute data wi
 Plot 1, which originally compared the S&P500 to other global indices, now only compares two global indices, but users can freely choose which two to compare.
 For Plot 2, the growth rate is calculated based on a chosen time period, and in the next stage, hovering over a bar will display the top 5 companies in that sector.
 For Plot 3 and 4, the original design was to display the top 5 companies' price line (in Plot 3) and volume percentage (in Plot 4) when selecting a sector. 
-However, due to time constraints, sector selection has only been implemented for one plot at a time. In the next stage, selecting a sector in one plot will also update the other plot.
+However, due to time constraints, we cannot highlight the specified company one both plots.
 
 The overall framework has been completed, from tracking global indices to individual companies' stock prices. This framework is helpful for individual investors to monitor trends and gather information. 
 However, there are still many details that need to be considered, such as:
