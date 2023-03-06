@@ -1,0 +1,14 @@
+altair==4.1.0
+dash==2.1.0
+dash-bootstrap-components==0.12.2
+pandas==1.3.5
+plotly==5.3.1
+yfinance==0.1.63
+
+# you can run the following commands in your terminal or command prompt:
+"""
+python3 -m venv myenv
+source myenv/bin/activate    # on macOS or Linux
+myenv\Scripts\activate.bat  # on Windows
+pip install -r requirements.txt
+"""
