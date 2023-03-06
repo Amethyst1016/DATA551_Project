@@ -73,7 +73,7 @@ app.layout = html.Div([
             html.P(f'- HANG_SENG: {+growth_rates[cols[6]]}%', style=other_Market),
             html.P('Toyko Market', style=other_Market),
             html.P(f'- Nikkei_225: {+growth_rates[cols[7]]}%', style=other_Market),
-        ], style={'border-style':'solid', 'border-color':'black', 'margin':'10px'}),
+        ], style={'border-style':'solid', 'border-color':'#a1979e', 'margin':'10px'}),
         # radio
         html.Div([
             dcc.RadioItems(
@@ -131,11 +131,11 @@ app.layout = html.Div([
                 ], style={'width':'100%', 'display':'inline-block'}),
                 html.Div([
                     html.Iframe(
-                        id='scatter', style={'width': '100%', 'height': '100%', 'margin-left':'10%', 'margin-top':'10%'})
+                        id='scatter', style={'width': '100%', 'height': '70vh', 'margin-left':'10%', 'margin-top':'10%'})
                 ], style={'width':'50%', 'height':'90vh', 'float':'left'}),
                 html.Div([
                     html.Iframe(
-                        id='pie', style={'width': '100%', 'height': '100%', 'margin-left':'10%', 'margin-top':'10%'})
+                        id='pie', style={'width': '100%', 'height': '70vh', 'margin-left':'10%', 'margin-top':'10%'})
                 ], style={'width':'50%', 'height':'90vh', 'float':'right'})
             ]), label='Top 5 companies in SP500 GICS sectors')
         ])
