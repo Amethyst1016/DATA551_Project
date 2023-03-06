@@ -1,12 +1,16 @@
 GitHub folder structure:
 
     project/
-    ├── src/
+    ├── src_old/
     │   ├── data_processing.py
     │   ├── global_trend.py
     │   ├── bar_chart.py
     │   ├── top5_trend.py
     │   └── pie_chart.py
+    ├── src/
+    │   ├── data_processing.py
+    │   ├── app.py
+    │   └── SP500_merged.csv
     ├── demo_reports/
     │   ├── demo.ipynb
     │   ├── sector_bar_chart+volumn_pie_chart.ipynb
