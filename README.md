@@ -1,5 +1,7 @@
 # Stock Market Dashboard
 
+Link to our dashboard: https://data551dash.herokuapp.com
+
 ![sketch](sketch.jpeg)
 
 
