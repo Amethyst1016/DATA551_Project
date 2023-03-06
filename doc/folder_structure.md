@@ -8,7 +8,6 @@ GitHub folder structure:
     │   ├── top5_trend_old.py
     │   └── pie_chart_old.py
     ├── src/
-    │   ├── data_processing.py
     │   ├── app.py
     │   └── SP500_merged.csv
     ├── demo_report/
